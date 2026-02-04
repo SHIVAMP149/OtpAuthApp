@@ -1,13 +1,17 @@
 package com.lpu.otpauthapp.ui.theme
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -21,23 +25,32 @@ fun OtpScreen(
 ) {
     var otp by rememberSaveable { mutableStateOf("") }
 
+    val progress = (remainingSeconds.coerceAtLeast(0)) / 60f
+
     Box(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
         contentAlignment = Alignment.Center
     ) {
         Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(24.dp),
-            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(20.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surface
+            ),
+            elevation = CardDefaults.cardElevation(defaultElevation = 10.dp)
         ) {
             Column(
-                modifier = Modifier.padding(24.dp),
+                modifier = Modifier.padding(28.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+
+                // 🔐 Title
                 Text(
                     text = "Verify OTP",
-                    style = MaterialTheme.typography.headlineMedium
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = MaterialTheme.colorScheme.primary
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -45,18 +58,23 @@ fun OtpScreen(
                 Text(
                     text = "Enter the 6-digit code sent to",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center
                 )
+
+                Spacer(modifier = Modifier.height(4.dp))
 
                 Text(
                     text = email,
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        fontWeight = FontWeight.SemiBold
+                    ),
                     color = MaterialTheme.colorScheme.primary
                 )
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(28.dp))
 
-                // OTP Input
+                // 🔢 OTP Input
                 OutlinedTextField(
                     value = otp,
                     onValueChange = {
@@ -64,17 +82,23 @@ fun OtpScreen(
                             otp = it
                         }
                     },
-                    label = { Text("OTP") },
+                    label = { Text("6-digit OTP") },
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Number
                     ),
                     singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                        focusedLabelColor = MaterialTheme.colorScheme.primary,
+                        cursorColor = MaterialTheme.colorScheme.primary
+                    )
                 )
 
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
-                // Countdown text
+                // ⏳ Countdown
                 Text(
                     text = if (remainingSeconds > 0)
                         "OTP expires in ${remainingSeconds}s"
@@ -86,11 +110,17 @@ fun OtpScreen(
                         MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.bodyMedium
                 )
+
                 Spacer(modifier = Modifier.height(8.dp))
+
                 LinearProgressIndicator(
-                    progress = remainingSeconds / 60f,
-                    modifier = Modifier.fillMaxWidth()
+                    progress = progress,
+                    modifier = Modifier.fillMaxWidth(),
+                    color = MaterialTheme.colorScheme.primary
                 )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
                 // 🔁 Attempts left
                 Text(
                     text = "Attempts left: $attemptsLeft",
@@ -101,35 +131,44 @@ fun OtpScreen(
                     style = MaterialTheme.typography.bodySmall
                 )
 
+                // ❌ Error message
+                AnimatedVisibility(visible = message != null) {
+                    message?.let {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = it,
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.bodySmall,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
 
+                Spacer(modifier = Modifier.height(28.dp))
 
-                // Progress bar
-
-
-                // Error message
-                message?.let {
-                    Spacer(modifier = Modifier.height(8.dp))
+                // ✅ Verify Button
+                Button(
+                    onClick = { onVerify(otp) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(52.dp),
+                    enabled = otp.length == 6 && remainingSeconds > 0,
+                    shape = RoundedCornerShape(14.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        disabledContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)
+                    )
+                ) {
                     Text(
-                        text = it,
-                        color = MaterialTheme.colorScheme.error,
-                        style = MaterialTheme.typography.bodySmall
+                        text = "Verify OTP",
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        style = MaterialTheme.typography.titleMedium
                     )
                 }
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
-                // Verify button
-                Button(
-                    onClick = { onVerify(otp) },
-                    modifier = Modifier.fillMaxWidth(),
-                    enabled = otp.length == 6 && remainingSeconds > 0
-                ) {
-                    Text("Verify OTP")
-                }
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // Resend button (disabled until expiry)
+                // 🔁 Resend OTP
                 TextButton(
                     onClick = onResend,
                     enabled = remainingSeconds == 0
