@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "536848069868",
+    "project_id": "otpauthapp-26e22",
+    "storage_bucket": "otpauthapp-26e22.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:536848069868:android:ec8dbdd66c9a042c76a1c9",
+        "android_client_info": {
+          "package_name": "com.lpu.otpauthapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyALhjNpS7QBBukvP1yy53yihRZ9FIr6rjs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
