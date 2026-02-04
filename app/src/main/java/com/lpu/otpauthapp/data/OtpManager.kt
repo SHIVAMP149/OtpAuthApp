@@ -26,7 +26,6 @@ class OtpManager{
             System.currentTimeMillis(),
             0
         )
-        Log.d("OTP_TEST", "OTP for $email is $otp")
 
         return otp
     }
